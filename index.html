@@ -163,6 +163,15 @@
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"ImageGallery","name":"Mansur Habibullah - Journalism Photo Gallery","url":"https://mansurjournalist.netlify.app/#gallery","creator":{"@type":"Person","name":"Mansur Habibullah"},"image":[{"@type":"ImageObject","name":"Aaj Tak Bangla election coverage, 2026","caption":"Mansur Habibullah interviewing a political figure during the 2026 West Bengal election coverage for Aaj Tak Bangla.","contentUrl":"https://mansurjournalist.netlify.app/assets/aaj-tak-bangla-election-2026-ground-report-mansur-habibullah.webp","creator":{"@type":"Person","name":"Mansur Habibullah"}},{"@type":"ImageObject","name":"Ground report from a North Bengal waterbody","caption":"Mansur Habibullah conducts a field interview beside a waterbody covered with water hyacinth in North Bengal.","contentUrl":"https://mansurjournalist.netlify.app/assets/mansur-habibullah-field-reporting-riverside-cooch-behar.webp","creator":{"@type":"Person","name":"Mansur Habibullah"}},{"@type":"ImageObject","name":"On-location reporting in North Bengal","caption":"Mansur Habibullah points towards a location while reporting with the Aaj Tak and India Today microphone.","contentUrl":"https://mansurjournalist.netlify.app/assets/mansur-habibullah-india-today-ground-report-location.webp","creator":{"@type":"Person","name":"Mansur Habibullah"}},{"@type":"ImageObject","name":"Interview with a local resident in Jalpaiguri","caption":"Mansur Habibullah interviews a local resident in Jalpaiguri for an Aaj Tak Bangla ground report.","contentUrl":"https://mansurjournalist.netlify.app/assets/mansur-habibullah-interview-local-resident-jalpaiguri.webp","creator":{"@type":"Person","name":"Mansur Habibullah"}},{"@type":"ImageObject","name":"Reporting from Ras Mela ground, Cooch Behar","caption":"Mansur Habibullah reports from Ras Mela ground in Cooch Behar during a political event.","contentUrl":"https://mansurjournalist.netlify.app/assets/mansur-habibullah-ras-mela-cooch-behar-election-report.webp","creator":{"@type":"Person","name":"Mansur Habibullah"}},{"@type":"ImageObject","name":"With colleagues during a reporting assignment","caption":"Mansur Habibullah with fellow media professionals during a field assignment.","contentUrl":"https://mansurjournalist.netlify.app/assets/mansur-habibullah-journalists-team-field-reporting.webp","creator":{"@type":"Person","name":"Mansur Habibullah"}},{"@type":"ImageObject","name":"Interaction with BSF personnel","caption":"Mansur Habibullah speaks with BSF personnel during a field reporting assignment.","contentUrl":"https://mansurjournalist.netlify.app/assets/mansur-habibullah-interacts-bsf-officers-border-reporting.webp","creator":{"@type":"Person","name":"Mansur Habibullah"}},{"@type":"ImageObject","name":"Mansur Habibullah, India Today ground reporter","caption":"Portrait of Mansur Habibullah holding the India Today microphone during a reporting assignment.","contentUrl":"https://mansurjournalist.netlify.app/assets/mansur-habibullah-india-today-reporter-portrait.webp","creator":{"@type":"Person","name":"Mansur Habibullah"}},{"@type":"ImageObject","name":"Research and note-taking between assignments","caption":"Mansur Habibullah takes notes while preparing a field report.","contentUrl":"https://mansurjournalist.netlify.app/assets/mansur-habibullah-notes-research-journalism.webp","creator":{"@type":"Person","name":"Mansur Habibullah"}},{"@type":"ImageObject","name":"Ground reporting in front of Cooch Behar palace","caption":"Mansur Habibullah reports in front of the historic Cooch Behar palace with the Aaj Tak Bangla microphone.","contentUrl":"https://mansurjournalist.netlify.app/assets/mansur-habibullah-aaj-tak-bangla-cooch-behar-palace.webp","creator":{"@type":"Person","name":"Mansur Habibullah"}}]}
 </script>
+
+<style id="auto-reports-style">
+#auto-reports .auto-report-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:24px}
+#auto-reports .auto-report{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:20px}
+#auto-reports .auto-report h3{font-size:1.08rem;line-height:1.45;margin:10px 0}
+#auto-reports .auto-report p{opacity:.78;font-size:.92rem}
+#auto-reports .auto-report a{display:inline-block;margin-top:8px}
+#auto-reports .auto-report-meta{font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;opacity:.7}
+</style>
 </head>
 <body>
   <header class="topbar">
@@ -468,6 +477,32 @@
         </article>
       </div>
     </section>
+
+
+    <section id="auto-reports">
+      <div class="section-label">Latest published work</div>
+      <h2>Aaj Tak &amp; India Today NE Reports</h2>
+      <p class="section-intro">Latest reports discovered from the author search and checked against the byline. Read each story on the publisher’s website.</p>
+      <div id="auto-report-grid" class="auto-report-grid" aria-live="polite"><p>Loading latest reports…</p></div>
+      <p class="section-intro" id="auto-report-updated"></p>
+    </section>
+    <script>
+    (async function(){
+      const grid=document.getElementById('auto-report-grid');
+      const updated=document.getElementById('auto-report-updated');
+      try{
+        const r=await fetch('/reports.json?v='+Date.now(),{cache:'no-store'});
+        if(!r.ok) throw new Error('Report feed is not available yet');
+        const data=await r.json();
+        const items=Array.isArray(data.reports)?data.reports:[];
+        if(!items.length){grid.innerHTML='<p>New byline-verified reports will appear here after the first scheduled check.</p>';return;}
+        grid.innerHTML=items.map(x=>'<article class="auto-report"><div class="auto-report-meta">'+escapeHtml(x.publisher||'Published report')+' · '+escapeHtml(x.date||'')+'</div><h3>'+escapeHtml(x.title||'Untitled report')+'</h3><p>'+escapeHtml(x.summary||'Read the original report.')+'</p><a href="'+safeUrl(x.url)+'" target="_blank" rel="noopener noreferrer">Read original report ↗</a></article>').join('');
+        updated.textContent=data.updated_at?'Last checked: '+new Date(data.updated_at).toLocaleString('en-IN'):'';
+      }catch(e){grid.innerHTML='<p>Automated report updates are being set up. Please check again later.</p>';}
+      function escapeHtml(v){return String(v).replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));}
+      function safeUrl(v){try{const u=new URL(v);return ['https:'].includes(u.protocol)?u.href:'#';}catch(e){return '#';}}
+    })();
+    </script>
 
     <section id="contact" class="contact-panel">
       <div>
